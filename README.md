@@ -2,9 +2,7 @@
 
 Reads a folder of microdrama screenplays and finds 20 to 60 second promo clips that open on a hook, end on a cliffhanger and make sense to a stranger. It runs fully on a laptop with a free local model (Ollama). Nothing is sent to a paid API.
 
-Two notebooks:
-- **`promo_finder.ipynb`**: the full tool (find, check, retry, rank, cold-viewer test, hook pass, save outputs).
-- **`Kuku redo/redo.ipynb`**: the same core idea in 7 short steps, written to be read top to bottom: read one episode → all 50 → the numbered text the AI reads → check a clip by hand → AI picks → one retry → rank. Change the `path` and `FOLDER` lines at the top of steps 1 and 3 to your screenplay folder.
+Everything is in one notebook: **`promo_finder.ipynb`**.
 
 ## How it works
 
@@ -16,7 +14,8 @@ Two notebooks:
 | 4. Check | code | line numbers → timestamps. Rules: 20 to 60s, real lines, no overlaps. If a rule breaks, the model is told exactly what's wrong and gets one retry. What's still broken keeps a flag |
 | 5. Rank | code | hook + cliffhanger + standalone scores, −5 per flag, +2 for episodes 1 to 10. Overlapping picks are removed |
 | 6. Cold-viewer test | AI | the top 20 clean promos are shown to a fresh call with **no context at all**, like a stranger on TikTok. It says what happens, whether it makes sense and what question the ending leaves. Confusing clips drop. The top 10 has at most 2 per episode |
-| 7. Human | editor | `show_clip(id)` prints the exact script lines of any promo, so a person can check before posting |
+| 7. Hook pass | AI + code | for the top 10, the model re-picks the opening line from the clip plus the 6 lines before it. Code keeps it only if the clip stays 20 to 60s |
+| 8. Human | editor | `show_clip(id)` prints the exact script lines of any promo, so a person can check before posting |
 
 **Why line numbers instead of timestamps?** The first version asked the model for timestamps and quotes directly. On episodes 1 to 10 only **1 of 18** promos passed the rules: too short, the hook not at the start, the cliffhanger not at the end, made-up quotes. See `outputs/experiments/v1_model_gives_timestamps/` in the shared outputs folder. Small models judge drama fine but can't do the time maths, so code does the maths now.
 
